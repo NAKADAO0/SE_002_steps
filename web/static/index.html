@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Code Review · Agent 工作区</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+    <script src="/static/app.js" defer></script>
+  </head>
+  <body>
+    <svg class="symbols" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <symbol id="i-plus" viewBox="0 0 24 24">
+          <path d="M12 5v14M5 12h14" />
+        </symbol>
+        <symbol id="i-code" viewBox="0 0 24 24">
+          <path d="m8 7-5 5 5 5m8-10 5 5-5 5m-3-14-2 18" />
+        </symbol>
+        <symbol id="i-arrow" viewBox="0 0 24 24">
+          <path d="M12 19V5m-5 5 5-5 5 5" />
+        </symbol>
+        <symbol id="i-folder" viewBox="0 0 24 24">
+          <path d="M3 7V5h6l2 2h10v13H3z" />
+        </symbol>
+        <symbol id="i-clock" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 7v5l3 2" />
+        </symbol>
+        <symbol id="i-panel" viewBox="0 0 24 24">
+          <rect x="3" y="4" width="18" height="16" rx="2" />
+          <path d="M9 4v16" />
+        </symbol>
+        <symbol id="i-sun" viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="4" />
+          <path
+            d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l2 2m10 10 2 2M5 19l2-2M17 7l2-2"
+          />
+        </symbol>
+        <symbol id="i-check" viewBox="0 0 24 24">
+          <path d="m5 12 4 4L19 6" />
+        </symbol>
+        <symbol id="i-copy" viewBox="0 0 24 24">
+          <rect x="8" y="8" width="12" height="12" rx="2" />
+          <path d="M16 8V4H4v12h4" />
+        </symbol>
+        <symbol id="i-download" viewBox="0 0 24 24">
+          <path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4" />
+        </symbol>
+        <symbol id="i-chevron" viewBox="0 0 24 24">
+          <path d="m9 5 7 7-7 7" />
+        </symbol>
+      </defs>
+    </svg>
+    <div class="workspace">
+      <aside class="sidebar" id="sidebar">
+        <div class="brand">
+          <span class="brand-mark"
+            ><svg><use href="#i-code" /></svg></span
+          ><span>Code Review<span class="brand-sub">AGENT WORKSPACE</span></span
+          ><button
+            id="sidebar-close"
+            class="icon-button mobile-only"
+            aria-label="关闭侧栏"
+          >
+            ×
+          </button>
+        </div>
+        <button class="new-task" id="new-task">
+          <svg><use href="#i-plus" /></svg>新建任务<span>⌘ N</span>
+        </button>
+        <div class="section-label">工作区</div>
+        <div class="project">
+          <svg><use href="#i-folder" /></svg
+          ><span
+            >第二次作业<span class="project-sub">CodeReviewWorkflow</span></span
+          ><span class="tiny-dot"></span>
+        </div>
+        <div class="history-head">
+          <span class="section-label">最近任务</span
+          ><button id="refresh-history" class="plain-button" title="刷新任务">
+            ↻
+          </button>
+        </div>
+        <nav id="history" aria-label="任务历史">
+          <div class="history-empty">还没有任务<br />从一个代码需求开始。</div>
+        </nav>
+        <div class="sidebar-bottom">
+          <div class="connection">
+            <span id="connection-dot" class="tiny-dot"></span
+            ><span id="connection-text">正在连接服务</span>
+          </div>
+          <div class="profile">
+            <span class="avatar">计</span>
+            <div>计浩晟<span>2320100622 · 软件工程</span></div>
+            <button id="theme-toggle" class="icon-button" aria-label="切换主题">
+              <svg><use href="#i-sun" /></svg>
+            </button>
+          </div>
+        </div>
+      </aside>
+      <main class="main">
+        <header class="topbar">
+          <div class="breadcrumbs">
+            <button
+              class="icon-button mobile-only"
+              id="sidebar-open"
+              aria-label="打开侧栏"
+            >
+              <svg><use href="#i-panel" /></svg></button
+            ><span>第二次作业</span><svg><use href="#i-chevron" /></svg
+            ><strong id="task-title">新建任务</strong>
+          </div>
+          <div class="topbar-right">
+            <span class="local-badge"
+              ><span class="tiny-dot"></span>本地工作区</span
+            ><button
+              id="toggle-inspector"
+              class="icon-button"
+              aria-label="切换结果面板"
+            >
+              <svg><use href="#i-panel" /></svg>
+            </button>
+          </div>
+        </header>
+        <div class="work-area">
+          <section class="conversation">
+            <div id="conversation-scroll" class="conversation-scroll">
+              <section class="welcome" id="welcome">
+                <div class="welcome-mark">
+                  <svg><use href="#i-code" /></svg>
+                </div>
+                <div class="eyebrow">THREE AGENTS. ONE WORKFLOW.</div>
+                <h1>让代码，经过一次协作。</h1>
+                <p>
+                  描述你的需求，或交给我们一段代码。<br />编码、审查与修复 Agent
+                  会共同完成它。
+                </p>
+                <div class="suggestions">
+                  <button data-example="average">
+                    <span class="suggestion-icon">∑</span
+                    ><strong>修复平均值函数</strong
+                    ><span>发现空列表除零，并完成修复</span
+                    ><svg><use href="#i-chevron" /></svg></button
+                  ><button data-example="generate">
+                    <span class="suggestion-icon">⌘</span
+                    ><strong>从需求生成代码</strong
+                    ><span>编写一个稳定的去重函数</span
+                    ><svg><use href="#i-chevron" /></svg></button
+                  ><button data-example="demo">
+                    <span class="suggestion-icon">▷</span
+                    ><strong>体验完整工作流</strong
+                    ><span>离线示例 · 无需模型调用</span
+                    ><svg><use href="#i-chevron" /></svg>
+                  </button>
+                </div>
+              </section>
+              <section id="task-content" class="task-content" hidden>
+                <div class="task-heading">
+                  <span class="eyebrow">WORKFLOW SESSION</span
+                  ><span id="run-status" class="status-badge"></span>
+                </div>
+                <h1 id="run-heading"></h1>
+                <div id="user-message" class="user-message"></div>
+                <div id="agent-timeline" class="agent-timeline"></div>
+                <div id="result-message" class="result-message"></div>
+                <button id="resume-run" class="secondary-button" hidden>
+                  从失败节点恢复
+                </button>
+              </section>
+            </div>
+            <div class="composer-area">
+              <div id="error-banner" role="alert" hidden></div>
+              <form id="composer" class="composer">
+                <label for="requirement" class="sr-only">代码需求</label
+                ><textarea
+                  id="requirement"
+                  placeholder="描述一个代码需求，或让 Agent 帮你审查代码…"
+                  rows="3"
+                  maxlength="10000"
+                ></textarea>
+                <div id="source-wrap" class="source-wrap" hidden>
+                  <div id="uploaded-file" class="uploaded-file" hidden>
+                    <svg><use href="#i-code" /></svg
+                    ><span id="uploaded-name"></span>
+                    <button
+                      type="button"
+                      id="remove-file"
+                      aria-label="移除上传文件"
+                    >
+                      ×
+                    </button>
+                  </div>
+                  <div class="source-label">
+                    初始代码 <span>Python · 可选</span
+                    ><button
+                      type="button"
+                      id="clear-source"
+                      class="plain-button"
+                    >
+                      清空
+                    </button>
+                  </div>
+                  <textarea
+                    id="source-code"
+                    aria-label="初始 Python 代码"
+                    placeholder="粘贴待审查的 Python 代码…"
+                    spellcheck="false"
+                    maxlength="100000"
+                  ></textarea>
+                </div>
+                <div class="composer-controls">
+                  <div class="composer-options">
+                    <input
+                      type="file"
+                      id="file-input"
+                      accept=".py"
+                      aria-label="上传 Python 代码文件"
+                      hidden
+                    />
+                    <button
+                      type="button"
+                      id="upload-file"
+                      class="option-button"
+                    >
+                      <svg><use href="#i-folder" /></svg>上传文件
+                    </button>
+                    <button
+                      type="button"
+                      id="attach-code"
+                      class="option-button"
+                    >
+                      <svg><use href="#i-code" /></svg>附加代码</button
+                    ><label class="mode-control"
+                      ><span class="tiny-dot"></span
+                      ><select id="mode" aria-label="运行模式">
+                        <option value="live">DeepSeek</option>
+                        <option value="demo">离线演示</option>
+                      </select></label
+                    ><label class="repair-control" title="最多修复次数"
+                      >修复
+                      <select id="max-repairs" aria-label="最多修复次数">
+                        <option value="1">1 次</option>
+                        <option value="2" selected>2 次</option>
+                        <option value="3">3 次</option>
+                        <option value="0">仅审查</option>
+                      </select></label
+                    >
+                  </div>
+                  <button
+                    id="send-task"
+                    type="submit"
+                    class="send-button"
+                    aria-label="启动任务"
+                  >
+                    <svg><use href="#i-arrow" /></svg>
+                  </button>
+                </div>
+              </form>
+              <div class="composer-footnote">
+                <span id="mode-note">源码仅做静态检查，不自动执行。</span
+                ><span>Ctrl + Enter 运行</span>
+              </div>
+            </div>
+          </section>
+          <aside class="inspector" id="inspector">
+            <div class="inspector-heading">
+              <span>任务产物</span><span class="file-badge">PYTHON</span>
+            </div>
+            <div class="inspector-tabs" role="tablist">
+              <button role="tab" aria-selected="true" data-tab="code">
+                代码</button
+              ><button role="tab" aria-selected="false" data-tab="diff">
+                差异<span id="diff-count"></span></button
+              ><button role="tab" aria-selected="false" data-tab="issues">
+                问题<span id="issues-count"></span></button
+              ><button role="tab" aria-selected="false" data-tab="logs">
+                日志
+              </button>
+            </div>
+            <div class="artifact-toolbar">
+              <span id="artifact-label"
+                ><svg><use href="#i-code" /></svg>final_code.py</span
+              >
+              <div>
+                <button
+                  id="copy-code"
+                  class="icon-button"
+                  aria-label="复制代码"
+                >
+                  <svg><use href="#i-copy" /></svg></button
+                ><button
+                  id="download-code"
+                  class="export-button"
+                  aria-label="导出最终代码"
+                  title="复审通过后可导出最终代码"
+                >
+                  <svg><use href="#i-download" /></svg>
+                  <span>导出最终代码</span>
+                </button>
+              </div>
+            </div>
+            <div id="artifact-content" class="artifact-content">
+              <div class="artifact-empty">
+                <svg><use href="#i-code" /></svg>
+                <h3>代码将在这里呈现</h3>
+                <p>跟随每个 Agent 的工作，<br />查看代码、修改和审查结果。</p>
+                <div class="empty-code">
+                  <span>01</span><i># your next idea</i><br /><span>02</span
+                  ><i># starts here.</i>
+                </div>
+              </div>
+            </div>
+            <div class="inspector-footer">
+              <span><span class="tiny-dot"></span>三个 Agent 协作</span
+              ><button id="download-state" class="plain-button">
+                导出状态 ↗
+              </button>
+            </div>
+          </aside>
+        </div>
+        <footer class="statusbar">
+          <span
+            ><svg><use href="#i-folder" /></svg>CodeReviewWorkflow<span
+              class="status-separator"
+              >/</span
+            ><span id="statusbar-mode">DeepSeek</span></span
+          ><span
+            >编码 <b>→</b> 审查 <b>→</b> 修复 <b>→</b> 复审<span
+              class="status-separator"
+              >·</span
+            >Python</span
+          >
+        </footer>
+      </main>
+    </div>
+    <div id="toast" role="status" hidden></div>
+  </body>
+</html>
