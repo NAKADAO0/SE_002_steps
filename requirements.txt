@@ -1,0 +1,17 @@
+# 核心 Agent 框架与大模型驱动 (基于 LangChain)
+langchain>=1.1.0
+langchain-core>=1.1.0
+langchain-openai>=1.6.0
+openai>=1.30.0
+pydantic>=2.0.0
+python-dotenv>=1.0.0
+tenacity>=8.2.0
+
+# 交互界面
+rich>=13.0.0
+streamlit>=1.30.0
+fastapi>=0.110.0
+uvicorn>=0.30.0
+
+# 自动化测试与执行沙箱
+pytest>=7.0.0
